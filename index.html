@@ -194,10 +194,9 @@
       <div class="date">20 · 10</div>
       <div class="greet" id="greet"></div>
       <h2 id="lt"></h2>
-      <p class="body" data-t="Một bông hoa có thể làm đẹp một ngày. Còn {p}, làm cho thế giới này dịu dàng hơn."></p>
-      <p class="body" data-t="Nhân ngày 20/10, chúc {p} luôn được yêu thương, trân trọng và có thật nhiều niềm vui. Mong {p} đủ vững vàng để theo đuổi những điều mình mơ ước, đủ bình yên để tận hưởng những điều nhỏ bé và đủ tự tin để theo đuổi những điều mình yêu."></p>
-      <!-- <p class="body" data-t="Mỗi bông hoa trong khu vườn này là một lời chúc — cho nụ cười, cho sức khỏe, và cho tất cả những điều tốt đẹp mà {p} xứng đáng có được."></p> -->
-      <p class="body" data-t="Hôm nay và cả những ngày sau, hãy cứ rạng rỡ theo cách của riêng mình nhé."></p>
+      <p class="body" data-t="Một bông hoa có thể làm đẹp một ngày. Còn {p} thì làm cho thế giới này dịu dàng hơn."></p>
+      <p class="body" data-t="Nhân ngày 20/10, chúc {p} luôn được yêu thương, trân trọng và có thật nhiều niềm vui. Mong {p} đủ vững vàng để theo đuổi những điều mình mơ ước, và đủ bình yên để tận hưởng những điều nhỏ bé."></p>
+      <p class="body" data-t="Hôm nay và cả những ngày sau, cứ rạng rỡ theo cách của riêng {p} nha."></p>
       <div class="sign"><span id="sign"></span> <span class="heart">♡</span></div>
       <div class="from" id="from" hidden></div>
       <button class="btn-link" id="closeBtn" type="button">Ngắm vườn hoa</button>
@@ -211,18 +210,23 @@
 (() => {
   /* ===== Cá nhân hoá qua URL: ?to=Cô%20Lan&from=Lớp%2012A1 ===== */
   const q = new URLSearchParams(location.search);
-  const to = (q.get('to') || '').trim().slice(0, 40);
+  // Mặc định gửi Duyên, xưng "em". Có thể đổi qua ?to=...&xung=...
+  const qTo = (q.get('to') || '').trim().slice(0, 40);
+  const to = qTo || 'Duyên';
   const from = (q.get('from') || '').trim().slice(0, 60);
-  const p = to ? to.split(/\s+/)[0].toLowerCase() : 'bạn';   // cách xưng hô trong thư
-  const toName = to || 'bạn';
+  // cách xưng hô trong thư: "Cô Lan" -> "cô", còn tên riêng thì giữ nguyên chữ hoa
+  const PRONOUNS = ['cô', 'chị', 'em', 'bạn', 'bé', 'mẹ', 'bà', 'dì', 'mợ', 'thím', 'cậu', 'nàng'];
+  const first = qTo.split(/\s+/)[0].toLowerCase();
+  const p = (q.get('xung') || '').trim().slice(0, 20) || (!qTo ? 'em' : PRONOUNS.includes(first) ? first : qTo);
+  const toName = to;
   const fill = s => s.replaceAll('{p}', p);
 
   document.getElementById('brand').textContent = `Dành ${toName}, cả một vườn thương.`;
   document.getElementById('introSub').textContent = `Chạm vào bông hoa, một điều dịu dàng đang chờ ${p}.`;
-  document.getElementById('greet').textContent = `Gửi ${toName} thương mến,`;
+  document.getElementById('greet').textContent = `Gửi ${toName},`;
   document.getElementById('lt').textContent = fill('Mong những điều đẹp đẽ luôn nở bên {p}.');
   document.querySelectorAll('[data-t]').forEach(n => n.textContent = fill(n.dataset.t));
-  document.getElementById('sign').textContent = fill('Gửi {p} thật nhiều thương mến');
+  document.getElementById('sign').textContent = fill('Chúc {p} 20/10 thật vui');
   if (from) { const f = document.getElementById('from'); f.textContent = '— ' + from; f.hidden = false; }
 
   /* ===== Tiện ích ===== */
